@@ -1,0 +1,147 @@
+#!/bin/bash
+
+_mapDirectories() {
+
+	directories=""
+	
+	for dir in ~/Documents/src; do 
+		for subdir in $dir/*/*; do 
+			directories="$(basename $subdir) $directories"
+		done; 
+	done
+
+	dirs=""
+	for dir in $directories; do
+		dirs="$dir $dirs"
+	done
+
+	export PWS_DIRS=$dirs
+}
+
+lr() {
+
+    PROFILE=$1
+
+    USER="None"
+
+    . ~/.pws/git/config
+
+    if [[ "$PROFILE" != "" ]]; then
+        USER=$(eval echo '$'$PROFILE)
+    else
+        USER=$(eval echo $default)
+    fi
+
+    if [[ "$USER" == "" ]]; then
+        echo "Profile not found..."
+        USER=$(eval echo $default)
+    fi
+
+	ls ~/Documents/src/$USER
+
+}
+
+cr() {
+
+	REPO=$1
+	PROFILE=$2
+
+	USER="None"
+
+	. ~/.pws/git/config
+
+	if [[ "$PROFILE" != "" ]]; then
+		USER=$(eval echo '$'$PROFILE)
+	else
+		USER=$(eval echo $default)
+	fi
+
+	if [[ "$USER" == "" ]]; then
+		echo "Profile not found..."
+		USER=$(eval echo $default)
+	fi
+
+	cd ~/Documents/src/$USER/$REPO
+	
+}
+
+lr() {
+
+    PROFILE=$1
+
+    USER="None"
+
+    . ~/.pws/git/config
+
+    if [[ "$PROFILE" != "" ]]; then
+        USER=$(eval echo '$'$PROFILE)
+    else
+        USER=$(eval echo $default)
+    fi
+
+    if [[ "$USER" == "" ]]; then
+        echo "Profile not found..."
+    fi
+
+    ls ~/Documents/src/$USER
+
+}
+
+add() {
+	
+	REPO=$1
+	PROFILE=$2
+
+	if [[ "$REPO" == "this" ]]; then
+		dir=$(pwd)
+		code --add $dir 
+		return
+	fi
+
+    USER="None"
+
+	. ~/.pws/git/config
+
+    if [[ "$PROFILE" != "" ]]; then
+        USER=$(eval echo '$'$PROFILE)
+    else
+        USER=$(eval echo $default)
+    fi
+
+    if [[ "$USER" == "" ]]; then
+        echo "Profile not found..."
+    fi
+
+	code --add ~/Documents/src/$USER/$REPO/
+
+}
+
+work() {
+    WORKSPACE=$1
+    PROFILE=$2
+
+    USER="None"
+
+    . ~/.pws/git/config
+
+    if [[ "$PROFILE" != "" ]]; then
+        USER=$(eval echo '$'$PROFILE)
+    else
+        USER=$(eval echo $default)
+    fi
+
+    if [[ "$USER" == "" ]]; then
+        echo "Profile not found..."
+    fi
+
+	code ~/Documents/workspaces/$USER/$WORKSPACE.code-workspace
+
+}
+
+. ~/.pws/git/config
+_mapDirectories
+
+complete -W "${PWS_PROFILES}" work
+complete -W "${PWS_PROFILES} ${PWS_DIRS}" cr
+complete -W "${PWS_PROFILES}" lr
+complete -W "${PWS_PROFILES} ${PWS_DIRS}" add

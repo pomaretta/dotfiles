@@ -1,0 +1,55 @@
+#!/bin/bash
+
+# ========================= #
+# CLONE COMMAND 			#
+# ========================= #
+
+usage() {
+	echo "Usage: clone <REPO> <?PROFILE>"
+}
+
+clone() {
+
+	REPOSITORY=$1
+	USER=$2
+
+	mkdir -p ~/Documents/src/$USER
+	cd ~/Documents/src/$USER
+
+	git clone github.com:$USER/$REPOSITORY > /dev/null 2>&1 || echo "An error ocurred"
+	
+	echo "Successfull clone $REPOSITORY of $USER on ~/Documents/src/$USER"
+
+	exit 0
+
+}
+
+main() {
+	
+	REPO=$1
+	PROFILE=$2
+		
+	USER="None"
+
+	. ~/.pws/git/config
+
+	if [[ "$PROFILE" != "" ]]; then
+		USER=$(eval echo '$'$PROFILE)
+	else
+		USER=$(eval echo $default)
+	fi
+
+	if [[ "$USER" == "" ]]; then
+		echo "Profile not found..."
+		exit 1
+	fi
+
+	clone $REPO $USER
+	
+}
+
+if [[ $# < 1 ]]; then
+	usage
+else
+	main $@
+fi
